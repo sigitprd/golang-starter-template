@@ -1,0 +1,46 @@
+# Binaries
+/bin/
+/build/
+/dist/
+/*.exe
+/*.exe~
+/*.dll
+/*.so
+/*.dylib
+
+# Output of go build
+*.out
+
+# Vendor directory (if not using Go modules)
+vendor/
+
+# IDE/editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+storage/logs/
+
+# Env files
+.env
+.env.*
+
+# Coverage and testing
+coverage.*
+*.coverprofile
+
+# Test binary
+*.test
+
+# Generated files
+gen/
+
+# Secrets or config
+config/test.yaml
