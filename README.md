@@ -41,12 +41,19 @@ go run ./cmd/server/main.go
 ## 🏗️ Struktur Umum Starter
 ```gotemplate
 .
+├── .github/          # Workflow CI/CD
 ├── cmd/              # Entry point aplikasi
+├── config/           # Konfigurasi aplikasi
 ├── internal/         # Handler, service, repo, dsb.
+├── logs/             # File log aplikasi
+├── middleware/       # Middleware (CORS, logging, dsb.)
 ├── migrations/       # Migrasi dan seed SQL
 ├── pkg/              # Helper, util, logger, response
-├── go.mod / go.sum
-└── .env
+├── storage/          # File statis (jika ada)
+├── go.mod / go.sum   # Dependency management
+├── .env              # File konfigurasi environment
+├── .env.deploy       # File konfigurasi untuk deploy
+└── Makefile          # Skrip build dan run
 ```
 
 ---
