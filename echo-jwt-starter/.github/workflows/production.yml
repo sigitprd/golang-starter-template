@@ -1,0 +1,96 @@
+#name: Deploy PRODUCTION Golang via SSH
+#
+#on:
+#  push:
+#    branches:
+#      - production
+#
+#jobs:
+#  deploy:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Validasi Secrets
+#        run: |
+#          echo "🔍 Validasi secrets..."
+#          REQUIRED_SECRETS=("VPS_HOST" "VPS_USER" "VPS_SSH_KEY" "VPS_PORT")
+#          for secret in "${REQUIRED_SECRETS[@]}"; do
+#            if [ -z "${!secret}" ]; then
+#              echo "❌ ERROR: Secret $secret belum tersedia di GitHub Settings!"
+#              exit 1
+#            fi
+#          done
+#        env:
+#          VPS_HOST: ${{ secrets.VPS_HOST }}
+#          VPS_USER: ${{ secrets.VPS_USER }}
+#          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+#          VPS_PORT: ${{ secrets.VPS_PORT }}
+#
+#      - name: Deploy via SSH (Appleboy)
+#        uses: appleboy/ssh-action@v1.0.0
+#        with:
+#          host: ${{ secrets.VPS_HOST }}
+#          username: ${{ secrets.VPS_USER }}
+#          key: ${{ secrets.VPS_SSH_KEY }}
+#          port: ${{ secrets.VPS_PORT }}
+#          script: |
+#            set -e
+#
+#            APP_DIR="/path/to/your/app"  # Ganti dengan path aplikasi Anda
+#            cd "$APP_DIR"
+#
+#            echo "📦 Load .env.deploy..."
+#            if [ ! -f .env.deploy ]; then
+#              echo "❌ File .env.deploy tidak ditemukan!"
+#              exit 1
+#            fi
+#            source .env.deploy
+#
+#            echo "🔍 Validasi isi .env.deploy..."
+#            REQUIRED_VARS=("APP_DIR" "APP_BINARY" "APP_SERVICE")
+#            for var in "${REQUIRED_VARS[@]}"; do
+#              if [ -z "${!var}" ]; then
+#                echo "❌ ERROR: Variable $var belum di-set di .env.deploy"
+#              exit 1
+#              fi
+#            done
+#
+#            echo "🔄 [1/6] Backup binary lama..."
+#            if [ -f "$APP_BINARY" ]; then
+#              sudo cp "$APP_BINARY" "$APP_BINARY.bak"
+#            fi
+#
+#            echo "⬇️ [2/6] Git pull branch production..."
+#            git config --global --add safe.directory "$APP_DIR"
+#            git pull origin production
+#
+#            echo "🛠️ [3/6] Build binary baru..."
+#            make build
+#
+#            echo "✅ [4/6] Replace binary..."
+#            sudo mv "$APP_BINARY.new" "$APP_BINARY"
+#
+#            echo "🚀 [5/6] Restart supervisor service..."
+#            if ! sudo supervisorctl restart "$APP_SERVICE"; then
+#              echo "❌ Restart gagal! Rollback ke binary lama..."
+#              sudo mv "$APP_BINARY.bak" "$APP_BINARY"
+#              sudo supervisorctl restart "$APP_SERVICE"
+#              echo "⚠️ Deploy gagal, rollback selesai."
+#              exit 1
+#            fi
+#
+#            echo "🔍 Verifikasi service berjalan..."
+#            sleep 2
+#            SERVICE_STATUS=$(sudo supervisorctl status "$APP_SERVICE" | awk '{print $2}')
+#            if [ "$SERVICE_STATUS" != "RUNNING" ]; then
+#              echo "❌ Service $APP_SERVICE gagal berjalan. Status: $SERVICE_STATUS"
+#              echo "🔁 Rollback ke binary lama..."
+#              sudo mv "$APP_BINARY.bak" "$APP_BINARY"
+#              sudo supervisorctl restart "$APP_SERVICE"
+#              exit 1
+#            fi
+#
+#            echo "🧹 [6/6] Deploy sukses, hapus backup..."
+#            sudo rm -f "$APP_BINARY.bak"
+#
+#            echo "🎉 Deploy selesai tanpa error."
