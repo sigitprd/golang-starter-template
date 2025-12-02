@@ -7,6 +7,10 @@
 /*.dll
 /*.so
 /*.dylib
+main
+*/main
+server
+*/server
 
 # Output of go build
 *.out
@@ -35,6 +39,7 @@ storage/logs/
 # Coverage and testing
 coverage.*
 *.coverprofile
+coverage.html
 
 # Test binary
 *.test
@@ -44,3 +49,13 @@ gen/
 
 # Secrets or config
 config/test.yaml
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Database
+*.db
+*.sqlite
+*.sqlite3

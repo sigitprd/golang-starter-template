@@ -53,6 +53,7 @@ func TestConfigEnv(t *testing.T) {
 	defer os.Clearenv()
 	var cfg constants
 	val := "host=localhost port=5999 user=root password=root123 dbname=dbroot sslmode=disable"
+	_ = os.Setenv("DSN_MAIN", val)
 
 	err := Load(Opts{
 		Config:    &cfg,

@@ -1,0 +1,68 @@
+run:
+  timeout: 5m
+  tests: true
+  build-tags: []
+  skip-dirs:
+    - vendor
+    - bin
+    - logs
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+
+linters:
+  enable:
+    - errcheck       # Checks for unchecked errors
+    - gosimple       # Simplifies code
+    - govet          # Reports suspicious constructs
+    - ineffassign    # Detects ineffectual assignments
+    - staticcheck    # Applies static analysis checks
+    - typecheck      # Type-checks Go code
+    - unused         # Checks for unused code
+    - gofmt          # Checks code formatting
+    - goimports      # Checks import formatting
+    - misspell       # Finds commonly misspelled words
+    - revive         # Replacement for golint
+    - gosec          # Security checks
+    - bodyclose      # Checks HTTP response body is closed
+    - noctx          # Finds sending http request without context.Context
+    - exportloopref  # Checks for pointers to loop variables
+  disable:
+    - structcheck    # Deprecated
+    - deadcode       # Deprecated
+    - varcheck       # Deprecated
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: false
+  
+  govet:
+    check-shadowing: false
+  
+  gofmt:
+    simplify: true
+  
+  revive:
+    rules:
+      - name: exported
+        disabled: false
+      - name: unexported-return
+        disabled: true
+      - name: var-naming
+        disabled: false
+      - name: indent-error-flow
+        disabled: false
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  exclude-rules:
+    # Exclude some linters from running on tests files
+    - path: _test\.go
+      linters:
+        - errcheck
+        - gosec

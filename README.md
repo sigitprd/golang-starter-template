@@ -27,14 +27,54 @@ Kumpulan starter project backend dengan Golang untuk berbagai kebutuhan REST API
 
 ## ⚙️ Cara Menggunakan
 
-1. Pilih folder starter yang kamu inginkan
-2. Salin `.env.example` menjadi `.env`, lalu sesuaikan
-3. Jalankan database (PostgreSQL)
-4. Jalankan aplikasi:
+### Quick Start
 
+1. **Clone repository ini**
 ```bash
-go run ./cmd/server/main.go
+git clone https://github.com/sigitprd/golang-starter-template.git
+cd golang-starter-template
 ```
+
+2. **Jalankan PostgreSQL dengan Docker Compose** (opsional)
+```bash
+docker-compose up -d
+```
+Ini akan menjalankan PostgreSQL di port 5432 dan Adminer (database UI) di port 8080.
+
+3. **Pilih starter yang diinginkan**
+```bash
+cd echo-jwt-starter  # atau echo-lite-starter, fiber-jwt-starter, fiber-lite-starter
+```
+
+4. **Setup environment**
+```bash
+cp .env.example .env
+# Edit .env sesuai kebutuhan (database credentials, JWT secret, dll)
+```
+
+5. **Install dependencies**
+```bash
+go mod download
+```
+
+6. **Jalankan migrasi database**
+```bash
+make migrate-up
+```
+
+7. **Jalankan aplikasi**
+```bash
+make run
+# atau: go run ./cmd/server/main.go
+```
+
+### Akses Adminer (Database UI)
+Jika menggunakan Docker Compose, buka browser: http://localhost:8080
+- **System**: PostgreSQL
+- **Server**: postgres
+- **Username**: postgres
+- **Password**: postgres
+- **Database**: sesuai DB_NAME di .env Anda
 
 ---
 
@@ -78,5 +118,30 @@ go run ./cmd/server/main.go
 - Membuat REST API backend sederhana hingga menengah
 - Belajar best practice structuring project Golang
 - Membuat microservice ringan dengan kebutuhan JWT
+- Prototype atau MVP development
+- Base template untuk production-ready application
+
+---
+
+## 🎯 Pilih Starter yang Tepat
+
+| Kebutuhan | Starter yang Cocok |
+|-----------|-------------------|
+| Simple REST API tanpa auth | `echo-lite-starter` atau `fiber-lite-starter` |
+| REST API dengan JWT auth | `echo-jwt-starter` atau `fiber-jwt-starter` |
+| Prefer Echo framework | `echo-lite-starter` atau `echo-jwt-starter` |
+| Prefer Fiber framework (lebih cepat) | `fiber-lite-starter` atau `fiber-jwt-starter` |
+
+---
+
+## 🤝 Contributing
+
+Kami menyambut kontribusi! Silakan baca [CONTRIBUTING.md](CONTRIBUTING.md) untuk panduan lengkap.
+
+---
+
+## 📄 License
+
+Project ini menggunakan [MIT License](LICENSE).
 
 ---
