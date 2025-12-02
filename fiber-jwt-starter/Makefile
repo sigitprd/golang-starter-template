@@ -35,3 +35,46 @@ migrate-drop:
 
 run:
 	go run ./cmd/server/main.go
+
+test:
+	go test -v -race -cover ./...
+
+test-coverage:
+	go test -v -race -coverprofile=coverage.out ./...
+	go tool cover -html=coverage.out -o coverage.html
+	@echo "✅ Coverage report generated: coverage.html"
+
+lint:
+	@command -v golangci-lint >/dev/null 2>&1 || { echo "golangci-lint not installed. Run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest"; exit 1; }
+	golangci-lint run ./...
+
+fmt:
+	go fmt ./...
+	goimports -w .
+
+tidy:
+	go mod tidy
+
+clean:
+	rm -rf $(APP_BIN_DIR)
+	rm -f coverage.out coverage.html
+
+help:
+	@echo "Available targets:"
+	@echo "  make run              - Run the application"
+	@echo "  make build            - Build the application"
+	@echo "  make build-linux      - Build for Linux"
+	@echo "  make build-mac        - Build for macOS"
+	@echo "  make build-windows    - Build for Windows"
+	@echo "  make test             - Run tests"
+	@echo "  make test-coverage    - Run tests with coverage report"
+	@echo "  make lint             - Run linter"
+	@echo "  make fmt              - Format code"
+	@echo "  make tidy             - Tidy dependencies"
+	@echo "  make migrate-new      - Create new migration"
+	@echo "  make migrate-up       - Run migrations up"
+	@echo "  make migrate-down     - Run migrations down"
+	@echo "  make migrate-drop     - Drop all migrations"
+	@echo "  make clean            - Clean build artifacts"
+
+.PHONY: build build-linux build-mac build-windows migrate-new migrate-up migrate-down migrate-drop run test test-coverage lint fmt tidy clean help
