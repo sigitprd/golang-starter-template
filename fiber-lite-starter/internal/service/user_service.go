@@ -48,12 +48,10 @@ func (s *UserServiceImpl) Get(ctx context.Context) ([]dto.UserResponse, error) {
 }
 
 func (s *UserServiceImpl) GetById(ctx context.Context, id string) (dto.UserResponse, error) {
-	userRepo := s.repository.GetUserRepository()
-	user, err := userRepo.GetById(ctx, id)
+	user, err := s.repository.GetUserRepository().GetById(ctx, id)
 	if err != nil {
 		return dto.UserResponse{}, err
 	}
-
 	return dto.UserResponse{
 		Id:    user.Id,
 		Email: user.Email,
