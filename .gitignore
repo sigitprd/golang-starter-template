@@ -7,6 +7,10 @@
 /*.dll
 /*.so
 /*.dylib
+main
+*/main
+server
+*/server
 
 # Output of go build
 *.out
