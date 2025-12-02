@@ -50,7 +50,7 @@ lint:
 
 fmt:
 	go fmt ./...
-	goimports -w .
+	@command -v goimports >/dev/null 2>&1 && goimports -w . || echo "⚠️  goimports not installed. Run: go install golang.org/x/tools/cmd/goimports@latest"
 
 tidy:
 	go mod tidy

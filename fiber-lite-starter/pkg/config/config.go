@@ -43,8 +43,11 @@ func Load(opts Opts) error {
 
 	// Read environment variables to allow overriding config file values
 	// This should always be attempted, even if config file reading failed
+	// This allows environment variables to override config file values and
+	// provides flexibility when config files have parsing errors
 	if envErr := cleanenv.ReadEnv(opts.Config); envErr != nil && err == nil {
 		// Only return env error if there wasn't already a config file error
+		// If config file had errors, those take precedence in error reporting
 		err = envErr
 	}
 
