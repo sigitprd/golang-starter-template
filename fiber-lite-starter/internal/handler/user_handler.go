@@ -6,9 +6,10 @@ import (
 	"fiber-lite-starter/pkg/errmsg"
 	"fiber-lite-starter/pkg/response"
 	"fiber-lite-starter/pkg/utils"
+	"net/http"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
-	"net/http"
 )
 
 type UserHandler struct {
@@ -74,4 +75,37 @@ func (h *UserHandler) GetUserById(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusOK).JSON(response.Success(result, "User retrieved successfully"))
+}
+
+func (h *UserHandler) UpdatePassword(c *fiber.Ctx) error {
+	var request dto.UserUpdatePassword
+
+	// Bind path parameters (id)
+	if err := c.ParamsParser(&request); err != nil {
+		log.Info().Err(err).Msg("handler::UpdatePassword - Failed to parse params")
+		code, errs := errmsg.Errors(err, &request)
+		return c.Status(code).JSON(response.Error(errs))
+	}
+
+	// Bind body (old_password, new_password)
+	if err := c.BodyParser(&request); err != nil {
+		log.Info().Err(err).Msg("handler::UpdatePassword - Failed to parse request body")
+		code, errs := errmsg.Errors(err, &request)
+		return c.Status(code).JSON(response.Error(errs))
+	}
+
+	// Validation
+	if err := c.Locals("validator").(func(interface{}) error)(&request); err != nil {
+		log.Info().Err(err).Msg("handler::UpdatePassword - Validation failed")
+		code, errs := errmsg.Errors(err, &request)
+		return c.Status(code).JSON(response.Error(errs))
+	}
+
+	if err := h.Service.UpdatePassword(c.Context(), request); err != nil {
+		log.Warn().Err(err).Msg("handler::UpdatePassword - Service returned error")
+		code, errs := errmsg.Errors(err, &request)
+		return c.Status(code).JSON(response.Error(errs))
+	}
+
+	return c.Status(http.StatusOK).JSON(response.Success(nil, "Password updated successfully"))
 }

@@ -5,6 +5,7 @@ import (
 	"fiber-lite-starter/internal/repository/port"
 	"fiber-lite-starter/internal/service"
 	"fiber-lite-starter/pkg/response"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
 )
@@ -16,6 +17,7 @@ func RegisterUserRoutes(router fiber.Router, repo port.RepositoryRegistry) {
 	router.Post("", userHandler.CreateUser)
 	router.Get("", userHandler.GetUsers)
 	router.Get("/:id", userHandler.GetUserById)
+	router.Patch("/:id/update_password", userHandler.UpdatePassword)
 
 	// Catch-all for unknown routes under /user
 	router.All("/*", func(c *fiber.Ctx) error {

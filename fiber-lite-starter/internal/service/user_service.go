@@ -14,6 +14,7 @@ type UserService interface {
 	Get(ctx context.Context) ([]dto.UserResponse, error)
 	GetById(ctx context.Context, id string) (dto.UserResponse, error)
 	Create(ctx context.Context, req dto.UserRequest) (dto.UserResponse, error)
+	UpdatePassword(ctx context.Context, req dto.UserUpdatePassword) error
 }
 
 type UserServiceImpl struct {
@@ -94,4 +95,30 @@ func (s *UserServiceImpl) Create(ctx context.Context, req dto.UserRequest) (dto.
 		Email: user.Email,
 		Role:  user.Role,
 	}, nil
+}
+
+func (s *UserServiceImpl) UpdatePassword(ctx context.Context, req dto.UserUpdatePassword) error {
+	userRepo := s.repository.GetUserRepository()
+
+	// Get user by ID
+	user, err := userRepo.GetById(ctx, req.Id)
+	if err != nil {
+		return err
+	}
+
+	// Verify old password
+	if err := utils.ComparePassword(user.Password, req.OldPassword); err != nil {
+		return errmsg.NewCustomErrors(400, errmsg.WithMessage("Password lama salah"))
+	}
+
+	// Hash new password
+	hashedPassword, err := utils.HashPassword(req.NewPassword)
+	if err != nil {
+		return errmsg.NewCustomErrors(500, errmsg.WithMessage("Gagal mengenkripsi password"))
+	}
+
+	user.Password = hashedPassword
+
+	// Update user
+	return userRepo.Update(ctx, user)
 }

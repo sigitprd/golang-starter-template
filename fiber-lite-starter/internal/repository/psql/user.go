@@ -6,6 +6,7 @@ import (
 	"fiber-lite-starter/internal/entity"
 	"fiber-lite-starter/internal/repository/port"
 	"fiber-lite-starter/pkg/errmsg"
+
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
@@ -139,5 +140,28 @@ func (r *UserRepository) Create(ctx context.Context, user *entity.UserDB) error 
 		log.Error().Str("email", user.Email).Int64("rowsAffected", rowsAffected).Msg("repo::Create - Unexpected number of rows affected")
 		return errmsg.NewCustomErrors(500, errmsg.WithMessage("Failed to create user"))
 	}
+	return nil
+}
+
+func (r *UserRepository) Update(ctx context.Context, user *entity.UserDB) error {
+	query := `
+		UPDATE public.users
+		SET email = $2, password = $3, role = $4
+		WHERE id = $1 AND deleted_at IS NULL
+	`
+	result, err := r.DB.ExecContext(ctx, query, user.Id, user.Email, user.Password, user.Role)
+	if err != nil {
+		log.Error().Err(err).Str("id", user.Id).Msg("repo::Update - Failed to update user")
+		return errmsg.NewCustomErrors(500, errmsg.WithMessage("Failed to update user"))
+	}
+
+	if rowsAffected, err := result.RowsAffected(); err != nil {
+		log.Error().Err(err).Str("id", user.Id).Msg("repo::Update - Failed to check rows affected")
+		return errmsg.NewCustomErrors(500, errmsg.WithMessage("Failed to update user"))
+	} else if rowsAffected != 1 {
+		log.Error().Str("id", user.Id).Int64("rowsAffected", rowsAffected).Msg("repo::Update - Unexpected number of rows affected")
+		return errmsg.NewCustomErrors(404, errmsg.WithMessage(errmsg.UserNotFound))
+	}
+
 	return nil
 }
